@@ -59,4 +59,12 @@ public class SellectedSkill extends ArrayList<Skill> {
 		}
 		return answer;
 	}
+	public String toStringAdditional() {
+		String answer = "";
+		for(Skill skill : this) {
+			if(skill.point!=0)
+			answer = answer+" "+skill.name+" "+skill.point+"\n";
+		}
+		return answer;
+	}
 }

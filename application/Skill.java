@@ -2,6 +2,7 @@ package application;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,4 +50,20 @@ public class Skill {
 //		SkillCost.put("龍屬性攻擊強化",1);
 //		SkillCost.put("屬性解放/裝填擴張",3);
 	}
+	
+	public static Comparator<Skill> SkillNameComparator = new Comparator<Skill>() {
+
+		@Override
+		public int compare(Skill arg0, Skill arg1) {
+			int ret = 999;
+			if(arg0.name.length()>0 && arg1.name.length()>0) {
+				ret =(int)arg1.name.charAt(0) - (int)arg0.name.charAt(0); 
+			}else if (arg1.name.length()>0) {
+				ret =(int)arg1.name.charAt(0);
+			}else if (arg0.name.length()>0) {
+				ret =(int)arg0.name.charAt(0);
+			}
+			return ret;
+		}
+	};
 }

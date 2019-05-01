@@ -30,30 +30,38 @@ import javax.swing.RootPaneContainer;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -61,6 +69,8 @@ public class Main extends Application {
 	public static SellectedSkill sellectedSkill = new SellectedSkill();
 	public static SellectedSkill sellectedSet = new SellectedSkill();
 	public static SellectedSkill weaponHole = new SellectedSkill();
+	public static boolean isAddi = false;
+	public static SellectedSkill additionalSkill = new SellectedSkill();
 	public static ArrayList<String> filterArray = new ArrayList<String>();
 	public static String answer;
 	public static int answerLimit = 99;
@@ -109,7 +119,7 @@ public class Main extends Application {
 			}
 		});
 		TextField filter = new TextField();
-		filter.setPromptText("不要的裝備(開頭)");
+		filter.setPromptText("不要的裝備(部分字串)");
 		Button btnFilter = new Button();
 		btnFilter.setText("篩選");
 		Text filterWord = new Text();
@@ -333,6 +343,7 @@ public class Main extends Application {
 
 					@Override
 					public void run() {
+						isAddi = false;
 						answer = "";
 						answerCount = 0;
 						stopByValueNotEnough6 = false;
@@ -346,9 +357,23 @@ public class Main extends Application {
 						dialog.initOwner(s);
 						GridPane dialogVbox = new GridPane();
 						dialogVbox.setPadding(new Insets(5));
-						dialogVbox.getChildren().add(new Text(
-								"搜尋 : " + sellectedSkill.toString() + "    共有 " + answerCount + "條結果\n" + answer));
-						Scene dialogScene = new Scene(dialogVbox, -1, -1);
+						TextArea text = new TextArea(
+								"搜尋 : " + sellectedSkill.toString() + "    共有 " + answerCount + "條結果\n" + answer);
+						text.prefWidthProperty().bind(dialogVbox.prefWidthProperty());
+						text.prefHeightProperty().bind(dialogVbox.prefHeightProperty());
+						text.prefWidthProperty().bind(dialogVbox.widthProperty());
+						text.prefHeightProperty().bind(dialogVbox.heightProperty());
+						text.setWrapText(true);
+						dialogVbox.getChildren().add(text);
+						Scene dialogScene = new Scene(dialogVbox, -2, -2);
+						
+						Screen screen = Screen.getPrimary();
+						Rectangle2D bounds = screen.getVisualBounds();
+
+						dialog.setX(bounds.getMinX());
+						dialog.setY(bounds.getMinY());
+						dialog.setWidth(bounds.getWidth());
+						dialog.setHeight(bounds.getHeight());
 						dialog.setScene(dialogScene);
 						dialog.show();
 					}
@@ -382,6 +407,56 @@ public class Main extends Application {
 			}
 		});
 		gridBottom.add(btnReset, 1, 2);
+//追加技能
+		Button btnAddi = new Button();
+		btnAddi.setText("追加技能");
+		btnAddi.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Platform.runLater(new Runnable() {
+
+					@Override
+					public void run() {
+						isAddi = true;
+						additionalSkill.clear();
+						answer = "";
+						answerCount = 0;
+						stopByValueNotEnough6 = false;
+						stopByValueNotEnough5 = false;
+						stopByValueNotEnough4 = false;
+						stopByValueNotEnough3 = false;
+						stopByValueNotEnough2 = false;
+						checkAnswer();
+						final Stage dialog = new Stage();
+						dialog.initModality(Modality.APPLICATION_MODAL);
+						dialog.initOwner(s);
+						GridPane dialogVbox = new GridPane();
+						dialogVbox.setPadding(new Insets(5));
+						additionalSkill.sort(Skill.SkillNameComparator);
+						TextArea text = new TextArea(
+								"可以額外選擇以下技能 : \n"+additionalSkill.toStringAdditional());
+						text.prefWidthProperty().bind(dialogVbox.prefWidthProperty());
+						text.prefHeightProperty().bind(dialogVbox.prefHeightProperty());
+						text.prefWidthProperty().bind(dialogVbox.widthProperty());
+						text.prefHeightProperty().bind(dialogVbox.heightProperty());
+						text.setWrapText(true);
+						dialogVbox.getChildren().add(text);
+						Scene dialogScene = new Scene(dialogVbox, -2, -2);
+						
+						Screen screen = Screen.getPrimary();
+						Rectangle2D bounds = screen.getVisualBounds();
+
+						dialog.setX(bounds.getMinX());
+						dialog.setY(bounds.getMinY());
+						dialog.setWidth(bounds.getWidth());
+						dialog.setHeight(bounds.getHeight());
+						dialog.setScene(dialogScene);
+						dialog.show();
+					}
+				});
+			}
+		});
+		gridBottom.add(btnAddi, 2, 2);
 
 		ScrollPane rootScroll = new ScrollPane();
 		BorderPane root1 = new BorderPane();
@@ -556,9 +631,56 @@ public class Main extends Application {
 				}
 			}
 		});
+		comboBox.buttonCellProperty().bind(Bindings.createObjectBinding(() -> {
+
+		    int indexOf = comboBox.getItems().indexOf(comboBox.getValue());
+
+		    Color color = Color.TRANSPARENT;
+		    if(indexOf == 0) {}
+		    else {color =  Color.RED;}
+//		    switch (indexOf) {
+////		    case 0: color = Color.GREEN; break;
+//		    case 1: color = Color.RED; break;
+//		    default: break;
+//		    }
+
+		    final Color finalColor = color;
+
+		    // Get the arrow button of the combo-box
+		    StackPane arrowButton = (StackPane) comboBox.lookup(".arrow-button");
+
+
+		    return new ListCell<String>() {
+
+		        @Override
+		        protected void updateItem(String item, boolean empty) {
+		            super.updateItem(item, empty);
+
+		            if (empty || item == null) {
+		                setBackground(Background.EMPTY);
+		                setText("");
+		            } else {
+		                setBackground(new Background(new BackgroundFill(finalColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		                setText(item);
+		            }
+
+		            // Set the background of the arrow also
+		            if (arrowButton != null)
+		                arrowButton.setBackground(getBackground());
+		        }
+
+		    };
+		}, comboBox.valueProperty()));
 		panel.add(comboBox, positionX, positionY);
 	}
 
+	/**
+	 * @param panel
+	 * @param name
+	 * @param limit
+	 * @param positionX
+	 * @param positionY
+	 */
 	public static void addSetComboBox(GridPane panel, String name, int limit, int positionX, int positionY) {
 		final ComboBox<String> comboBox = new ComboBox<String>();
 		comboBox.setValue(name + 0);
@@ -581,6 +703,47 @@ public class Main extends Application {
 				}
 			}
 		});
+		comboBox.buttonCellProperty().bind(Bindings.createObjectBinding(() -> {
+
+		    int indexOf = comboBox.getItems().indexOf(comboBox.getValue());
+
+		    Color color = Color.TRANSPARENT;
+
+		    if(indexOf == 0) {}
+		    else {color =  Color.RED;}
+//		    switch (indexOf) {
+////		    case 0: color = Color.GREEN; break;
+//		    case 1: color = Color.RED; break;
+//		    default: break;
+//		    }
+
+		    final Color finalColor = color;
+
+		    // Get the arrow button of the combo-box
+		    StackPane arrowButton = (StackPane) comboBox.lookup(".arrow-button");
+
+
+		    return new ListCell<String>() {
+
+		        @Override
+		        protected void updateItem(String item, boolean empty) {
+		            super.updateItem(item, empty);
+
+		            if (empty || item == null) {
+		                setBackground(Background.EMPTY);
+		                setText("");
+		            } else {
+		                setBackground(new Background(new BackgroundFill(finalColor, CornerRadii.EMPTY, Insets.EMPTY)));
+		                setText(item);
+		            }
+
+		            // Set the background of the arrow also
+		            if (arrowButton != null)
+		                arrowButton.setBackground(getBackground());
+		        }
+
+		    };
+		}, comboBox.valueProperty()));
 		panel.add(comboBox, positionX, positionY);
 	}
 
@@ -634,11 +797,11 @@ public class Main extends Application {
 					break;
 				}
 			}
-			if (answerCount > answerLimit)
+			if ((answerCount > answerLimit) && !isAddi)
 				break;
 			boolean jump = false;
 			for (String string : filterArray) {
-				if (equipment.name.startsWith(string)) {
+				if (equipment.name.contains(string)) {
 					jump = true;
 				}
 				if (jump) {
@@ -699,11 +862,11 @@ public class Main extends Application {
 						break;
 					}
 				}
-				if (answerCount > answerLimit)
+				if ((answerCount > answerLimit) && !isAddi)
 					break;
 				boolean jump2 = false;
 				for (String string : filterArray) {
-					if (equipment2.name.startsWith(string)) {
+					if (equipment2.name.contains(string)) {
 						jump2 = true;
 					}
 					if (jump2) {
@@ -762,11 +925,11 @@ public class Main extends Application {
 							break;
 						}
 					}
-					if (answerCount > answerLimit)
+					if ((answerCount > answerLimit) && !isAddi)
 						break;
 					boolean jump3 = false;
 					for (String string : filterArray) {
-						if (equipment3.name.startsWith(string)) {
+						if (equipment3.name.contains(string)) {
 							jump3 = true;
 						}
 						if (jump3) {
@@ -824,11 +987,11 @@ public class Main extends Application {
 						int value4 = value3 - equipment4.value;
 //						System.out.println("value4 " + value4+ " count : " + equipment4Count);
 //						System.out.println("pants"+l++);
-						if (answerCount > answerLimit)
+						if ((answerCount > answerLimit) && !isAddi)
 							break;
 						boolean jump4 = false;
 						for (String string : filterArray) {
-							if (equipment4.name.startsWith(string)) {
+							if (equipment4.name.contains(string)) {
 								jump4 = true;
 							}
 							if (jump4) {
@@ -884,11 +1047,11 @@ public class Main extends Application {
 								}
 							}
 
-							if (answerCount > answerLimit)
+							if ((answerCount > answerLimit) && !isAddi)
 								break;
 							boolean jump5 = false;
 							for (String string : filterArray) {
-								if (equipment5.name.startsWith(string)) {
+								if (equipment5.name.contains(string)) {
 									jump5 = true;
 								}
 								if (jump5) {
@@ -943,11 +1106,11 @@ public class Main extends Application {
 									} else
 										break;
 								}
-								if (answerCount > answerLimit)
+								if ((answerCount > answerLimit) && !isAddi)
 									break;
 								boolean jump6 = false;
 								for (String string : filterArray) {
-									if (equipment6.name.startsWith(string)) {
+									if (equipment6.name.contains(string)) {
 										jump6 = true;
 									}
 									if (jump6) {
@@ -1096,9 +1259,47 @@ public class Main extends Application {
 		if (pass) {
 //			System.out.println(head.name + " " + body.name + " " + hand.name + " " + pants.name + " " + foot.name + " "
 //					+ stone.name + " " +"  剩餘洞數 : "+ tmpholes.toString() + "  需要石頭 : " + stoneNeed);
-			answer = answer + head.name + " " + body.name + " " + hand.name + " " + pants.name + " " + foot.name + " "
-					+ stone.name + " " + "  剩餘洞數 : " + tmpholes.toString() + "  需要石頭 : " + stoneNeed + "\n";
-			answerCount++;
+			if(isAddi) {
+				for(Skill hole : tmpholes) {
+					if (additionalSkill.checkContain(hole.name)) {
+						if(additionalSkill.getSkill(hole.name).point<hole.point)additionalSkill.getSkill(hole.name).point = hole.point;
+					}else {
+						additionalSkill.add(hole);
+					}
+				}
+				
+				Skill[] equSkills = {head.skills[0],head.skills[1],body.skills[0],body.skills[1],hand.skills[0],hand.skills[1],pants.skills[0],pants.skills[1],foot.skills[0],foot.skills[1],stone.skills[0],stone.skills[1]};
+				for(Skill equ : equSkills) {
+					if(Main.sellectedSkill.checkContain(equ.name)&&Main.sellectedSkill.getSkill(equ.name).point>=equ.point)continue;
+					if (additionalSkill.checkContain(equ.name)) {
+						if(additionalSkill.getSkill(equ.name).point<equ.point)additionalSkill.getSkill(equ.name).point = equ.point;
+					}else {
+						additionalSkill.add(equ);
+					}
+				}
+				Equipment[] equipments = {head,body,hand,pants,foot,stone};
+				SellectedSkill[][][][] holesAddiSkills = {Equipment.HeadHolesAddiSkill,Equipment.BodyHolesAddiSkill,Equipment.HandHolesAddiSkill,Equipment.PantsHolesAddiSkill,Equipment.FootHolesAddiSkill,Equipment.StoneHolesAddiSkill};
+				for(int i = 0;i<6;i++) {
+					if(equipments[i].name.startsWith("任意")&&equipments[i].name.length()>5) {
+						int j = Integer.valueOf(equipments[i].name.substring(2, 3));
+						int k = Integer.valueOf(equipments[i].name.substring(4, 5));
+						int l = Integer.valueOf(equipments[i].name.substring(6, 7));
+						for(Skill equ : holesAddiSkills[i][j][k][l]) {
+							if(Main.sellectedSkill.checkContain(equ.name)&&Main.sellectedSkill.getSkill(equ.name).point>equ.point)continue;
+							if (additionalSkill.checkContain(equ.name)) {
+								if(additionalSkill.getSkill(equ.name).point<equ.point)additionalSkill.getSkill(equ.name).point = equ.point;
+							}else {
+								additionalSkill.add(equ);
+							}
+						}
+					}	
+				}
+				
+			}else {
+				answer = answer + head.name + " " + body.name + " " + hand.name + " " + pants.name + " " + foot.name + " "
+						+ stone.name + " " + "  剩餘洞數 : " + tmpholes.toString() + "  需要石頭 : " + stoneNeed + "\n";
+				answerCount++;	
+			}
 		}
 	}
 }

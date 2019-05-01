@@ -16,11 +16,12 @@ public class Equipment {
 	public String name;
 	public int defenence;
 	public int[] holes = { 0, 0, 0 };
-	public int value=0;
+	public int value = 0;
 	public Skill[] skills = { new Skill(), new Skill() };
 	public String set = null;
 	public String[] setSkills = { "", "" };
 	public int[] setNeed = { 0, 0 };
+	public SellectedSkill[][][] HolesAddiSkill = null;
 
 	public Equipment() {
 
@@ -43,7 +44,8 @@ public class Equipment {
 	}
 
 	public Equipment(String name, String skill1, int point1, String skill2, int point2, int hole1, int hole2, int hole3,
-			int def, String setName, String setSkill1, int setNeed, String setSkill2, int setNeed2,int value) {
+			int def, String setName, String setSkill1, int setNeed, String setSkill2, int setNeed2, int value,
+			SellectedSkill[][][] holesAddiSkill) {
 		this.name = name;
 		if (!skill1.equals("")) {
 			Skill sskill1 = new Skill(skill1, point1);
@@ -69,10 +71,12 @@ public class Equipment {
 		this.setNeed[0] = setNeed;
 		this.setSkills[1] = setSkill2;
 		this.setNeed[1] = setNeed2;
-		this.value = value; 
+		this.value = value;
+		this.HolesAddiSkill = holesAddiSkill;
 	}
 
-	public static void readFile(String path,ArrayList<Equipment> part,int[][][] holesCount) {
+	public static void readFile(String path, ArrayList<Equipment> part, int[][][] holesCount,
+			SellectedSkill[][][] holesAddiSkill) {
 		List<String> allLines;
 		try {
 			allLines = Files.readAllLines(Paths.get(path));
@@ -111,8 +115,16 @@ public class Equipment {
 				}
 				String set = data[23];
 				Equipment equipment = new Equipment(name, skill1, point1, skill2, point2, hole1, hole2, hole3, def, set,
-						null, 0, null, 0,value);
+						null, 0, null, 0, value, holesAddiSkill);
 				holesCount[hole1][hole2][hole3]++;
+				for (Skill equ : equipment.skills) {
+					if (holesAddiSkill[hole1][hole2][hole3].checkContain(equ.name)) {
+						if (holesAddiSkill[hole1][hole2][hole3].getSkill(equ.name).point < equ.point)
+							holesAddiSkill[hole1][hole2][hole3].getSkill(equ.name).point = equ.point;
+					} else {
+						holesAddiSkill[hole1][hole2][hole3].add(equ);
+					}
+				}
 				part.add(equipment);
 			}
 		} catch (IOException e) {
@@ -120,50 +132,154 @@ public class Equipment {
 			e.printStackTrace();
 		}
 	}
+
 	public static int[][][] HeadHolesCount = { { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } } };
+	public static SellectedSkill[][][] HeadHolesAddiSkill = {
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } } };
 	public static ArrayList<Equipment> Head = new ArrayList<Equipment>();
 	static {
-		readFile("database\\MHW_HEAD.csv", Head, HeadHolesCount);
+		readFile("database\\MHW_HEAD.csv", Head, HeadHolesCount, HeadHolesAddiSkill);
 	}
 	public static int[][][] BodyHolesCount = { { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } } };
+	public static SellectedSkill[][][] BodyHolesAddiSkill = {
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } } };
 	public static ArrayList<Equipment> Body = new ArrayList<Equipment>();
 	static {
-		readFile("database\\MHW_BODY.csv", Body, BodyHolesCount);
+		readFile("database\\MHW_BODY.csv", Body, BodyHolesCount, BodyHolesAddiSkill);
 	}
 	public static int[][][] HandHolesCount = { { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } } };
+	public static SellectedSkill[][][] HandHolesAddiSkill = {
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } } };
+
 	public static ArrayList<Equipment> Hand = new ArrayList<Equipment>();
 	static {
-		readFile("database\\MHW_HAND.csv", Hand, HandHolesCount);
+		readFile("database\\MHW_HAND.csv", Hand, HandHolesCount, HandHolesAddiSkill);
 	}
 	public static int[][][] PantsHolesCount = { { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } } };
+	public static SellectedSkill[][][] PantsHolesAddiSkill = {
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } } };
 	public static ArrayList<Equipment> Pants = new ArrayList<Equipment>();
 	static {
-		readFile("database\\MHW_WAIST.csv", Pants, PantsHolesCount);
+		readFile("database\\MHW_WAIST.csv", Pants, PantsHolesCount, PantsHolesAddiSkill);
 	}
 	public static int[][][] FootHolesCount = { { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } } };
+	public static SellectedSkill[][][] FootHolesAddiSkill = {
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } } };
 	public static ArrayList<Equipment> Foot = new ArrayList<Equipment>();
 	static {
-		readFile("database\\MHW_LEG.csv", Foot, FootHolesCount);
+		readFile("database\\MHW_LEG.csv", Foot, FootHolesCount, FootHolesAddiSkill);
 	}
 	public static int[][][] StoneHolesCount = { { { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
 			{ { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 }, { 0, 0, 0, 0 } } };
+	public static SellectedSkill[][][] StoneHolesAddiSkill = {
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } },
+			{ { new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() },
+					{ new SellectedSkill(), new SellectedSkill(), new SellectedSkill(), new SellectedSkill() } } };
 	public static ArrayList<Equipment> Stone = new ArrayList<Equipment>();
 	static {
 		List<String> allLines;
@@ -191,7 +307,7 @@ public class Equipment {
 					value++;
 				}
 				Equipment equipment = new Equipment(name, skill1, point1, skill2, point2, hole1, hole2, hole3, def, "",
-						null, 0, null, 0,value);
+						null, 0, null, 0, value, StoneHolesAddiSkill);
 				Stone.add(equipment);
 			}
 		} catch (IOException e) {
@@ -200,26 +316,27 @@ public class Equipment {
 		}
 	}
 
-	public static ArrayList<Equipment> filtSkill(String part,ArrayList<Equipment> equipments, int[][][] holesCount,
+	public static ArrayList<Equipment> filtSkill(String part, ArrayList<Equipment> equipments, int[][][] holesCount,
 			SellectedSkill skillWant, SellectedSkill setWant) {
 		ArrayList<Equipment> filtedEquipments = new ArrayList<Equipment>();
-		filtedEquipments.add(new Equipment("任意", "", 0, "", 0, 0, 0, 0, 0, "", "", 6, "", 6,0));
+		filtedEquipments.add(
+				new Equipment("任意", "", 0, "", 0, 0, 0, 0, 0, "", "", 6, "", 6, 0, equipments.get(0).HolesAddiSkill));
 		for (Equipment tmpequipment : equipments) {
-			Equipment equipment = new Equipment(tmpequipment); 
+			Equipment equipment = new Equipment(tmpequipment);
 			int value = equipment.value;
 			boolean match = false;
-				if (skillWant.checkContain(equipment.skills[0].name)) {
-					match = true;
-					value+=equipment.skills[0].point;
-				}
-				if (skillWant.checkContain(equipment.skills[1].name)) {
-					match = true;
-					value+=equipment.skills[1].point;
-				}
-				if (setWant.checkContain(equipment.set)) {
-					match = true;
-				}
-			
+			if (skillWant.checkContain(equipment.skills[0].name)) {
+				match = true;
+				value += equipment.skills[0].point;
+			}
+			if (skillWant.checkContain(equipment.skills[1].name)) {
+				match = true;
+				value += equipment.skills[1].point;
+			}
+			if (setWant.checkContain(equipment.set)) {
+				match = true;
+			}
+
 			if (match) {
 				equipment.value = value;
 				filtedEquipments.add(equipment);
@@ -233,11 +350,14 @@ public class Equipment {
 					if (holesCount[i][j][k] > 0) {
 						int value2 = 0;
 //					System.out.println(i+"-"+j+"-"+k+" "+holesCount[i][j][k]+" ");
-						if(i>0)value2++;
-						if(j>0)value2++;
-						if(k>0)value2++;
-						filtedEquipments.add(new Equipment("任意" + i + "-" + j + "-" + k +part, "", 0, "", 0, i, j, k, 0,
-								"", "", 6, "", 6,value2));
+						if (i > 0)
+							value2++;
+						if (j > 0)
+							value2++;
+						if (k > 0)
+							value2++;
+						filtedEquipments.add(new Equipment("任意" + i + "-" + j + "-" + k + part, "", 0, "", 0, i, j, k,
+								0, "", "", 6, "", 6, value2, equipments.get(0).HolesAddiSkill));
 //						System.out.println(i + "-" + j + "-" + k + " " + holesCount[i][j][k] + " " + filtedEquipments.toString());
 					}
 				}
@@ -248,13 +368,15 @@ public class Equipment {
 	}
 
 	public String toString() {
-		return "Equipment : " + this.name + " " + this.skills[0] + " " + this.skills[1]+" holes : "+this.holes[0]+this.holes[1]+this.holes[2]+" value : "+this.value;
+		return "Equipment : " + this.name + " " + this.skills[0] + " " + this.skills[1] + " holes : " + this.holes[0]
+				+ this.holes[1] + this.holes[2] + " value : " + this.value;
 	}
-	
-	 public static Comparator<Equipment> EquValueComparator = new Comparator<Equipment>() {
 
-			@Override
-			public int compare(Equipment arg0, Equipment arg1) {
-				return arg1.value-arg0.value;
-			}};
+	public static Comparator<Equipment> EquValueComparator = new Comparator<Equipment>() {
+
+		@Override
+		public int compare(Equipment arg0, Equipment arg1) {
+			return arg1.value - arg0.value;
+		}
+	};
 }
