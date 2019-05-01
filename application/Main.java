@@ -479,35 +479,130 @@ public class Main extends Application {
 
 		xSetCount = 0;
 		ySetCount = 0;
-		try {
-			List<String> allLines;
-			allLines = Files.readAllLines(Paths.get("database\\MHW_SKILL.csv"));
-			for (String line : allLines) {
-				String[] data = line.split(",");
-				String name = data[0];
-				int count = Integer.valueOf(data[2]);
-				if (xSetCount != 5) {
-					addStoneComboBox(grid2, name, count, xSetCount, ySetCount);
-				} else {
-					xSetCount = 0;
-					ySetCount++;
-					addStoneComboBox(grid2, name, count, xSetCount, ySetCount);
-				}
-				xSetCount++;
-
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-//		addStoneComboBox(grid2, "攻擊", 7, 5, 0);
-//		addStoneComboBox(grid2, "看破", 7, 1, 0);
-//		addStoneComboBox(grid2, "火屬性攻擊強化", 5, 0, 1);
-//		addStoneComboBox(grid2, "水屬性攻擊強化", 5, 1, 1);
-//		addStoneComboBox(grid2, "冰屬性攻擊強化", 5, 2, 1);
-//		addStoneComboBox(grid2, "龍屬性攻擊強化", 5, 3, 1);
-//		addStoneComboBox(grid2, "雷屬性攻擊強化", 5, 4, 1);
-
+		grid2.add(new Text("任務   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "耐力急速回復", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "跑者", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "體術", 5, 2, ySetCount);
+		addStoneComboBox(grid2, "吹笛名人", 1, 3, ySetCount);
+		ySetCount++;
+		grid2.add(new Text("道具   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "快吃", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "體力回復量UP", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "最愛菇類", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "滿足感", 1, 3, ySetCount);
+		addStoneComboBox(grid2, "廣域化", 5, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "炸彈客", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "整備", 3, 1, ySetCount);
+		ySetCount++;
+		grid2.add(new Text("戰鬥(生存)   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "迴避性能", 5, 0, ySetCount);
+		addStoneComboBox(grid2, "迴避距離UP", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "防禦性能", 5, 2, ySetCount);
+		addStoneComboBox(grid2, "防禦強化", 1, 3, ySetCount);
+		addStoneComboBox(grid2, "精靈加護", 3, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "收刀術", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "減輕膽怯", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "回復速度", 3, 2, ySetCount);
+		ySetCount++;
+		grid2.add(new Text("耐性   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "耳塞", 5, 0, ySetCount);
+		addStoneComboBox(grid2, "風壓耐性", 5, 1, ySetCount);
+		addStoneComboBox(grid2, "耐震", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "裂傷耐性", 3, 3, ySetCount);
+		addStoneComboBox(grid2, "瘴氣耐性", 3, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "昏厥耐性", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "麻痺耐性", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "毒耐性", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "睡眠耐性", 3, 3, ySetCount);
+		addStoneComboBox(grid2, "適應水場", 3, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "泥耐性", 1, 0, ySetCount);
+		addStoneComboBox(grid2, "適應瘴氣環境", 1, 1, ySetCount);
+		addStoneComboBox(grid2, "防禦力DOWN耐性", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "熱傷害無效", 1, 3, ySetCount);
+		addStoneComboBox(grid2, "爆破異常狀態的耐性", 3, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "屬性異常狀態的耐性", 3, 0, ySetCount);
+		ySetCount++;
+		grid2.add(new Text("屬性變化   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "攻擊", 7, 0, ySetCount);
+		addStoneComboBox(grid2, "防禦", 7, 1, ySetCount);
+		addStoneComboBox(grid2, "火耐性", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "水耐性", 3, 3, ySetCount);
+		addStoneComboBox(grid2, "雷耐性", 3, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "冰耐性", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "龍耐性", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "體力增強", 3, 2, ySetCount);
+		ySetCount++;
+		grid2.add(new Text("戰鬥(屬性/異常狀態)   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "火屬性攻擊強化", 5, 0, ySetCount);
+		addStoneComboBox(grid2, "水屬性攻擊強化", 5, 1, ySetCount);
+		addStoneComboBox(grid2, "冰屬性攻擊強化", 5, 2, ySetCount);
+		addStoneComboBox(grid2, "龍屬性攻擊強化", 5, 3, ySetCount);
+		addStoneComboBox(grid2, "雷屬性攻擊強化", 5, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "毒屬性強化", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "爆破屬性強化", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "睡眠屬性強化", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "麻痺屬性強化", 3, 3, ySetCount);
+		addStoneComboBox(grid2, "龍封力強化", 5, 4, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "KO術", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "破壞王", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "奪取耐力", 3, 2, ySetCount);
+		ySetCount++;
+		grid2.add(new Text("戰鬥(攻擊)   相關技能"), 0, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "看破", 7, 0, ySetCount);
+		addStoneComboBox(grid2, "弱點特效", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "精神抖擻", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "拔刀術【技】", 3, 3, ySetCount);
+		addStoneComboBox(grid2, "超會心", 3, 4, ySetCount);
+		addStoneComboBox(grid2, "騎乘名人", 1, 5, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "飛燕", 1, 0, ySetCount);
+		addStoneComboBox(grid2, "無屬性強化", 1, 1, ySetCount);
+		addStoneComboBox(grid2, "砥石使用高速化", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "剛刃研磨", 1, 3, ySetCount);
+		addStoneComboBox(grid2, "解放弓的蓄力階段", 1, 4, ySetCount);
+		addStoneComboBox(grid2, "毒瓶追加", 1, 5, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "麻痺瓶追加", 1, 0, ySetCount);
+		addStoneComboBox(grid2, "睡眠瓶追加", 1, 1, ySetCount);
+		addStoneComboBox(grid2, "爆破瓶追加", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "火場怪力", 5, 3, ySetCount);
+		addStoneComboBox(grid2, "怨恨", 5, 4, ySetCount);
+		addStoneComboBox(grid2, "不屈", 1, 5, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "無傷", 3, 0, ySetCount);
+		addStoneComboBox(grid2, "力量解放", 5, 1, ySetCount);
+		addStoneComboBox(grid2, "挑戰者", 5, 2, ySetCount);
+		addStoneComboBox(grid2, "匠", 5, 3, ySetCount);
+		addStoneComboBox(grid2, "心眼/彈道強化", 1, 4, ySetCount);
+		addStoneComboBox(grid2, "屬性解放/裝填擴充", 3, 5, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "砲彈裝填數UP", 1, 0, ySetCount);
+		addStoneComboBox(grid2, "砲術", 3, 1, ySetCount);
+		addStoneComboBox(grid2, "集中", 3, 2, ySetCount);
+		addStoneComboBox(grid2, "特殊射擊強化", 2, 3, ySetCount);
+		addStoneComboBox(grid2, "強化持續", 3, 4, ySetCount);
+		addStoneComboBox(grid2, "散彈/剛射強化", 1, 5, ySetCount);
+		ySetCount++;
+		addStoneComboBox(grid2, "通常彈/通常箭強化", 1, 0, ySetCount);
+		addStoneComboBox(grid2, "貫通彈/龍之箭強化", 1, 1, ySetCount);
+		ySetCount++;
+		grid2.add(new Text(""), 0, ySetCount);
+		ySetCount++;
 		HBox hbButtons = new HBox();
 		Button btSetZero = new Button();
 		btSetZero.setText("全部設為0");
@@ -516,8 +611,11 @@ public class Main extends Application {
 			public void handle(ActionEvent event) {
 				Iterator<Node> itNode = grid2.getChildren().iterator();
 				while (itNode.hasNext()) {
-					ComboBox<String> comboBox = (ComboBox<String>) itNode.next();
+					Node node = itNode.next();
+					try {
+					ComboBox<String> comboBox = (ComboBox<String>) node;
 					comboBox.getSelectionModel().select(0);
+					}catch(Exception ex) {}
 				}
 				System.out.println("全部設為0");
 			}
@@ -530,8 +628,10 @@ public class Main extends Application {
 			public void handle(ActionEvent event) {
 				Iterator<Node> itNode = grid2.getChildren().iterator();
 				while (itNode.hasNext()) {
+					try {
 					ComboBox<String> comboBox = (ComboBox<String>) itNode.next();
 					comboBox.getSelectionModel().select(comboBox.getItems().size() - 1);
+					}catch(Exception ex) {}
 				}
 				System.out.println("全部設為Max");
 			}
